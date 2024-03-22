@@ -1,0 +1,403 @@
+// BTDOANDSLK.cpp : Danh sach lien ket ho tro chuong trinh quan ly thong tin san pham o to duoc ban
+//
+
+// Khai bao thu vien                                           
+#include <iostream>                                          
+#include <string>                                             
+#include <conio.h>                                             
+#include<math.h>
+#include<Windows.h>
+
+//Su khong gian ten 
+using namespace std;
+
+// Danh sach lien ket
+
+// Dinh nghia cau truc quan li san pham o to duoc ban
+typedef struct
+{
+    char Masp[10];
+    char Tensp[10];
+    char Mausac[10];
+    int SoCho;
+    float Dtdc;
+    float Gia;
+}spType;
+
+
+// Dinh nghia nut node bang phan tu danh sach san pham o to duoc ban
+typedef struct node
+{
+    spType infor;
+    struct node* next;
+}spnodeType;
+
+//Dinh nghia danh sach lien ket quan li san pham o to duoc ban
+typedef struct
+{
+    spnodeType* head;
+    spnodeType* tail;
+}dssp_List;
+
+// Khoi tao danh sach
+void init_dssp(dssp_List* i)
+{
+    i->head = NULL;
+    i->tail = NULL;
+}
+
+// Nhap thong tin mot san pham o to duoc ban
+void Nhapspban(spType& sp)
+{
+    // Nhap ma san pham o to 
+    cout << "Nhap Ma san pham: "; cin.getline(sp.Masp, 10);
+
+    // Nhap ten san pham o to
+    cout << "Nhap Ten san pham: "; cin.getline(sp.Tensp, 10);
+
+    //Nhap mau sac
+    cout << "Nhap Mausac: "; cin.getline(sp.Mausac, 10);
+
+    //Nhap so cho
+    cout << "So cho: "; cin >> sp.SoCho;
+
+    //Nhap Dung tich dong co
+    cout << "Dung tich dong co: "; cin >> sp.Dtdc;
+
+    //Nhap Gia
+    cout << "Gia ban san pham o to: "; cin >> sp.Gia;
+}
+
+//  Tao node tu o bu
+spnodeType* Get_spNode(spType x)
+{
+    spnodeType* p;
+    p = new spnodeType;
+    p->infor = x;
+    p->next = NULL;
+    return p;
+}
+
+//Them thong tin vao cuoi danh sach
+void add_last(dssp_List* l, spnodeType* n)
+{
+    if (l->head == NULL)
+    {
+        l->head = n;
+        l->tail = n;
+    }
+    else
+    {
+        l->tail->next = n;
+        l->tail = n;
+    }
+}
+
+// Xuat danh sach lien ket
+// Xuat thong tin mot san pham o to duoc ban
+void Xuatsp(spType sp)
+{
+    cout << "\t" << sp.Masp;
+    cout << "\t" << sp.Tensp;
+    cout << "\t" << sp.Mausac;
+    cout << "\t" << sp.SoCho;
+    cout << "\t" << sp.Dtdc;
+    cout << "\t" << sp.Gia;
+    cout << endl;
+}
+
+// In node- in thong tin mot san pham o to duoc ban
+void Print_spNode(spnodeType* n)
+{
+    Xuatsp(n->infor);
+}
+
+// In danh sach thong tin san pham o to duoc ban theo dang danh sach lien ket
+void Print_Listsp(dssp_List* l)
+{
+    spnodeType* p;
+    p = l->head;
+    while (p != NULL)
+    {
+        Xuatsp(p->infor);
+        p = p->next;
+    }
+}
+
+// Dem so sp da duoc ban ra
+int Countlist_Sp(dssp_List* l)
+{
+    spnodeType* p;
+    int count = 0;
+    p = l->head;
+    while (p != NULL)
+    {
+        count++;
+        p = p->next;
+    }
+    return count;
+}
+
+// Dem so sp da duoc ban ra dieu kien tren 100000
+int Countlist_Sachcodieukien(dssp_List* l)
+{
+    spnodeType* p;
+    int count = 0;
+    p = l->head;
+    while (p != NULL)
+    {
+        if (p->infor.Gia >= 100000)
+        {
+            count++;
+
+        }
+        p = p->next;
+    }
+    return count;
+}
+
+// Tong so tien sp da ban duoc
+int Tong_sach(dssp_List* l)
+{
+    spnodeType* p;
+    int sum = 0;
+    p = l->head;
+    while (p != NULL)
+    {
+        sum = sum + p->infor.Gia;
+        p = p->next;
+    }
+    return sum;
+}
+
+//Tim kiem thong tin san pham o to duoc ban (dung cau truc LinearSearch)
+spnodeType* Find_List(dssp_List* l, char ma[])
+{
+    spnodeType* p;
+    p = l->head;
+    while (p != NULL && strcmp(p->infor.Masp, ma) != 0)
+    {
+        p = p->next;
+    }
+    return p;
+}
+
+//
+
+// Hoan vi thong tin san pham duoc ban- chuong trinh ho tro 
+void swap(spType& a, spType& b)
+{
+    spType t;
+    t = a;
+    a = b;
+    b = t;
+}
+
+// Sap xep danh sach thong tin san pham da ban theo Ma san pham ( dung chuong trinh SelectionSort ho tro)
+void SelectionSort(dssp_List* l)
+{
+    spnodeType* p, * q, * min;
+    p = l->head;
+    while (p != l->tail)
+    {
+        q = p->next;
+
+        //Tim min- chuong trinh ho tro chuong trinh sap xep thong tin
+        min = p;
+        while (q != NULL)
+        {
+            if (strcmp(q->infor.Masp, min->infor.Masp) < 0)
+                min = q;
+            q = q->next;
+        }
+        swap(min->infor, p->infor);
+        p = p->next;
+    }
+}
+
+// Sap xep danh sach thong tin sach da ban theo Ten Sach( dung chuong trinh InterchangeSort ho tro)
+void InterchangeSort(dssp_List* l)
+{
+    for (spnodeType* i = l->head; i != l->tail; i = i->next)
+    {
+        for (spnodeType* j = i->next; j != NULL; j = j->next)
+        {
+            if (strcmp(i->infor.Tensp, j->infor.Tensp) > 0)
+                swap(i->infor, j->infor);
+        }
+    }
+
+}
+
+//Sap xep thong tin danh sach da ban theo gia ban( dung chuong trinh Insertion Sort ho tro)
+void InsertionSort(dssp_List* l)
+{
+    for (spnodeType* i = l->head->next; i; i = i->next)
+    {
+        spnodeType* pos = l->head;
+        while (pos != i)
+        {
+            if (pos->infor.Gia > i->infor.Gia)
+            {
+                swap(pos->infor, i->infor);
+                pos = pos->next;
+            }
+            if (pos->infor.Gia < i->infor.Gia)
+                pos = pos->next;
+        }
+    }
+}
+
+// Sap xep thong tin san pham da ban theo ten mau sac( dung chuong trinh Bubble Sort ho tro)
+void BubbleSort(dssp_List* l)
+{
+    for (spnodeType* i = l->head; i->next != NULL; i = i->next)
+    {
+        for (spnodeType* j = i->next; j != NULL; j = j->next)
+        {
+            if (strcmp(i->infor.Mausac, j->infor.Mausac) > 0)
+                swap(i->infor, j->infor);
+        }
+    }
+}
+
+
+//
+// Sap xep thong tin san pham da ban theo gia (dung Quick Sort ho tro)
+void QuickSort_List(dssp_List* l)
+{
+    spnodeType* p, * x;
+    dssp_List* l1 = new dssp_List;
+    dssp_List* l2 = new dssp_List;
+    init_dssp(l1);
+    init_dssp(l2);
+    if (l->head != l->tail)
+    {
+        x = l->head; l->head = x->next;
+        //Tách list thành l1 và l2
+        while (l->head != NULL)
+        {
+            p = l->head;
+            l->head = p->next;
+            p->next = NULL;
+            if (p->infor.Gia <= x->infor.Gia)
+                add_last(l1, p);
+            else
+                add_last(l2, p);
+        }
+        //Đệ quy
+        QuickSort_List(l1); QuickSort_List(l2);
+        //Nối l1, x, l2 thành danh sách ban đầu
+        if (l1->head != NULL)
+        {
+            l->head = l1->head;
+            l1->tail->next = x;
+        }
+        else
+            l->head = x;
+        x->next = l2->head;
+        if (l2->head != NULL)
+            l->tail = l2->tail;
+        else
+            l->tail = x;
+    }
+}
+
+//Test chuong trinh 
+int main()
+{
+    // Danh sach lien ket quan ly cau truc thong tin san pham da ban 
+    dssp_List* ds;
+    ds = new dssp_List;
+    init_dssp(ds);
+    char u = 'c';
+    spType x;
+
+    // Tao vong lap nhap thong tin san pham da ban
+    while (u == 'c' || u == 'C')
+    {
+        spType s;
+        cout << "Nhap thong tin san pham o to duoc ban: " << endl;
+        Nhapspban(s);
+
+        //Tao node
+        spnodeType* n;
+        n = new spnodeType;
+        n = Get_spNode(s);
+
+        //Them thong tin san pham da ban vao cuoi danh sach
+        add_last(ds, n);
+
+        //Hoi nhap tiep hay khong
+        cout << "\n Nhap tiep hay khong (C/K) ?";
+        cin >> u;
+        cin.ignore();
+    }
+
+       // In danh sach thong tin sach da ban
+    cout << "\n Danh sach thong tin san pham o to duoc ban: " << endl;
+    Print_Listsp(ds);
+
+    /*//Dem so sach da duoc ban
+    cout << "\n So sach da duoc ban: ";
+    cout << Countlist_Sp(ds);
+
+    //Dem so sach da duoc ban voi gia tren 100000
+    cout << "\n So sach da duoc ban tren 100000: ";
+    cout << Countlist_Sachcodieukien(ds);
+
+    //Tong so tien quyen sach da ban
+    cout << "\n Tong tien sach da ban: ";
+    cout << Tong_sach(ds);*/
+
+    ////Tim kiem thong tin quyen sach da ban
+    //char m[15];
+    //cout << "\n Nhap Ma Sach can tim: ";
+    //cin.getline(m, 15);
+    //spnodeType* res = Find_List(ds, m);
+    //cout << "\n Ket qua tim kiem: " << endl;
+    //if (res == NULL)
+    //{
+    //    cout << "Khong tim thay" << endl;
+    //}
+    //else Print_spNode(res);
+
+    //// Sap xep danh sach thong tin sach da ban theo Ma san pham ( dung chuong trinh SelectionSort ho tro)
+    //cout << "\n SelectionSort";
+    //SelectionSort(ds);
+    //cout << "\n Sap xep danh sach thon tin san pham da ban";
+    //cout << "\n";
+    //Print_Listsp(ds);
+
+    /*// Sap xep danh sach thong tin sach da ban theo Ten San Pham( dung chuong trinh InterchangeSort ho tro)
+    cout << "\n InterchangeSort";
+    InterchangeSort(ds);
+    cout << "\n Sap xep danh sach thong tin san pham da ban";
+    cout << "\n";
+    Print_Listsp(ds);*/
+
+    /*// Sap xep thong tin sach da ban theo ten Mau sac( dung chuong trinh Bubble Sort ho tro)
+    cout << "\n BubbleSort";
+    BubbleSort(ds);
+    cout << "\n Sap xep danh sach thong tin san pham da ban";
+    cout << "\n";
+    Print_Listsp(ds);*/
+
+    /*//Sap xep thong tin danh sach da ban theo gia ban( dung chuong trinh Insertion Sort ho tro)
+    cout << "\n InsertionSort";
+    InsertionSort(ds);
+    cout << "\n Sap xep danh sach thong tin san pham da ban";
+    cout << "\n";
+    Print_Listsach(ds);
+
+    // Sap xep thong tin sach da ban theo gia (dung Quick Sort ho tro)
+    cout << "\n QuickSort";
+    QuickSort_List(ds);
+    cout << "\n Sap xep danh sach thong tin san pham da ban";
+    cout << "\n";
+    Print_Listsp(ds);*/
+
+    int t = _getch();
+    return 0;
+}
+
